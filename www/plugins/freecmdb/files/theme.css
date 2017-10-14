@@ -1,0 +1,19 @@
+
+.txtWhite {
+	color: #FFFFFF;
+}
+
+.txtWhiteHuge {
+	line-height: 48px;
+	color: #FFFFFF;
+}
+
+.txtFldHuge {
+	line-height: 56px;
+	font-size: 48px;
+}
+
+.tblRadioButtonMatrix tr td {
+	padding: 10px;
+}
+
