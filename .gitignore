@@ -1,0 +1,18 @@
+# Ensure this file isn't ignored
+!.gitignore
+# Ignore anything with these extensions:
+*.swp
+*.log
+*.o
+*.class
+*.a
+*.so
+*.gch
+*.pch
+*.csv
+# These are specific binaries, compiled or packaged
+freecmdb-bin.tar.gz
+cmdb
+# Ignore these specific files:
+*localconfig.php
+*htaccess

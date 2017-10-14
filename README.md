@@ -1,2 +1,2 @@
 # freecmdb
-A free CMDB system
+CMDB (Configuration Management Database) software
