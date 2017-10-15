@@ -30,49 +30,25 @@ function saveCI() {
 	return;
 }
 
-function genCaptureEntry( $sOrigin) {
-	$sRet = sprintf( "<form method=post action=\"%s\">\n", $sOrigin);
-	$sRet .= "<input type=hidden name=cmdbctx value=adm>\n";
-	$sRet .= "<input type=hidden name=cmdbcmd value=cinew>\n";
-	$sRet .= "<table align=center>\n";
-	$sRet .= sprintf(	"<tr><td><strong>%s:<strong></td><td>%s</td></tr>\n",
-							"New CI Name",
-							"<textarea rows=1 cols=80 maxlength=80 id=cmdb_itm_name name=cmdb_itm_name></textarea>");
-	$sRet .= sprintf(	"<tr><td valign=top><strong>%s:<strong></td><td>%s</td></tr>\n",
-							"Description",
-							"<textarea rows=10 cols=80 id=cmdb_itm_brief name=cmdb_itm_brief></textarea>");
-	$sRet .= sprintf(	"<tr><td colspan=2 align=center>%s</td></tr>\n",
-							"<input type=submit value=Add>");
-	$sRet .= "</table>\n";
-	$sRet .= "</form>\n";
-	return( $sRet);
-}
-
-function genEditItmPage( $sOrigin) {
+function genCapturePage( $sOrigin) {
 	require_once( FREECMDBBASE . "/lib/ci.php");
-	$sRet = "";
+	$sRet="";
 	$lCI = 0;
 	if ( !isset( $_POST['cmdbitm'])) {
 		if ( isset( $_GET['cmdbitm'])) $lCI = intval( $_GET['cmdbitm']);
 	} else $lCI = intval( $_POST['cmdbitm']);
 	$pCI = new CI();
 	$pCI->find( $lCI);
-	if ( $pCI->lID > 0) {
-		$sRet .= sprintf( "<form method=post action=\"%s\">\n", $sOrigin);
-		$sRet .= "<input type=hidden name=cmdbctx value=adm>\n";
-		$sRet .= sprintf( "<input type=hidden name=cmdbitm value=%d>\n", $lCI);
-		$sRet .= $pCI->genEditView( "cmdbcmd", "cisave");
-		$sRet .= "</form>\n";
-	} else {
-		$sRet .= "<table align=center>\n";
+	if ( $pCI->lID <= 0) {
+		$sRet = "<table align=center>\n";
 		$sRet .= sprintf( "<tr><td align=center>%s</td></tr>\n", "No CI");
 		$sRet .= "</table>\n";
-	}
+	} else $sRet = $pCI->genEditForm( $sOrigin, "cmdbcmd", "cisave");
 	return( $sRet);
 }
 
 function genCMDBCapture( $sOrigin) {
-	$sTbl = "mantis_plugin_freecmdb_itm";
+	$sTbl = "cmdbci";
 	$sQry = sprintf( "select id,name from %s", $sTbl, auth_get_current_user_id());
 	$pRslt = db_query_bound( $sQry, Array());
 	$iRows = db_num_rows( $pRslt);
@@ -81,15 +57,23 @@ function genCMDBCapture( $sOrigin) {
 		$pRow = db_fetch_array( $pRslt);
 		$lCI = intval( $pRow['id']);
 		$sName = $pRow['name'];
-		$sURL = sprintf( "plugin.php?page=freecmdb/view&cmdbctx=adm&cmdbcmd=ciedit&cmdbitm=%d", $lCI);
-		$sRet .= sprintf( "<tr><td>%s</td><td><a href=\"%s\">edit</a></td>", $sName, $sURL);
+		$sForm = sprintf( "<form method=post action=\"%s\">\n", $sOrigin);
+		$sForm .= "<input type=hidden name=cmdbctx value=adm>\n";
+		$sForm .= "<input type=hidden name=cmdbcmd value=ciedit>\n";
+		$sForm .= sprintf("<input type=hidden name=cmdbitm value=%d>\n",$lCI);
+		$sForm .= "<table align=center>\n";
+		$sCtl = "<input type=submit value=edit>";
+		$sForm .= sprintf( "<tr><td align=center>%s</td></tr>\n", $sCtl);
+		$sForm .= "</table>\n";
+		$sForm .= "</form>\n";
+		$sRet .= sprintf( "<tr><td>%s</td><td>%s</td>", $sName, $sForm);
 	}
 	$sRet .= "</table>\n";
 	return( $sRet);
 }
 
 function genCMDBCatSel( $iCat) {
-	$sLT="mantis_plugin_freecmdb_lut";
+	$sLT="cmdblut";
 	$sQry="select b.name,b.eid from ".$sLT." a join ".$sLT." b on b.ptn=a.idx where a.ptn=0 and a.tag='cicat' order by b.idx";
 	$pRslt = db_query_bound( $sQry, Array());
 	$iRows = db_num_rows( $pRslt);
@@ -193,9 +177,12 @@ function showCMDBCreatePage( $sOp) {
 	printf( "<tr><td align=center><br></td></tr>\n");
 	printf( "<tr><td align=center>\n");
 	if ( $sOp == "ciedit") {
-		printf( "%s", genEditItmPage( "plugin.php?page=freecmdb/view"));
+		printf( "%s", genCapturePage( "plugin.php?page=freecmdb/view"));
 	} else {
-		printf( "%s", genCaptureEntry( "plugin.php?page=freecmdb/view"));
+		require_once( FREECMDBBASE . "/lib/ci.php");
+		$pCI = new CI();
+		$sOrigin = "plugin.php?page=freecmdb/view";
+		printf( "%s", $pCI->genCaptureForm( $sOrigin, "cmdbcmd", "cinew"));
 		printf( "</td></tr>\n");
 		printf( "</table>\n");
 	// Current capture phase

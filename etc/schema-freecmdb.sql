@@ -1,12 +1,12 @@
 
 --
--- Table structure for table `mantis_plugin_freecmdb_itm`
+-- Table structure for table `cmdbci`
 --
 
---DROP TABLE IF EXISTS `mantis_plugin_freecmdb_itm`;
+--DROP TABLE IF EXISTS `cmdbci`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `mantis_plugin_freecmdb_itm` (
+CREATE TABLE `cmdbci` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `chg` datetime,
   `cat` bigint(20),
@@ -21,13 +21,13 @@ CREATE TABLE `mantis_plugin_freecmdb_itm` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `mantis_plugin_freecmdb_lut`
+-- Table structure for table `cmdblut`
 --
 
-DROP TABLE IF EXISTS `mantis_plugin_freecmdb_lut`;
+DROP TABLE IF EXISTS `cmdblut`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `mantis_plugin_freecmdb_lut` (
+CREATE TABLE `cmdblut` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `created` datetime,
   `pid` bigint(20),
@@ -44,13 +44,13 @@ CREATE TABLE `mantis_plugin_freecmdb_lut` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `mantis_plugin_freecmdb_log`
+-- Table structure for table `cmdblog`
 --
 
---DROP TABLE IF EXISTS `mantis_plugin_freecmdb_log`;
+--DROP TABLE IF EXISTS `cmdblog`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `mantis_plugin_freecmdb_log` (
+CREATE TABLE `cmdblog` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `created` datetime,
   `cat` int(10),

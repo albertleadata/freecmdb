@@ -6,7 +6,7 @@ class CI extends Stored {
 
 	function CI() {
 		$this->Stored();
-		$this->sTable = "mantis_plugin_freecmdb_itm";
+		$this->sTable = "cmdbci";
 		$this->addField( "id", "int", "ID", 1000, "cmdb_itm_id");
 		$this->addField( "chg", "date", "Changed", 0, "cmdb_itm_chg");
 		$this->addField( "cat", "int", "Type", 0, "cmdb_itm_cat");
@@ -82,10 +82,42 @@ class CI extends Stored {
 		return( $pRet);
 	}
 
-	function genEditView( $sBtn, $sCmd) {
-		$sRet = "<table align=center>\n";
+//	Basic name and description capture/create form
+	function genCaptureForm( $sOrigin, $sBtn, $sCmd) {
+		$lCI = $this->lID;
+//		$sOrigin = "plugin.php?page=freecmdb/view";
+//		$sBtn = "cmdbcmd";
+//		$sCmd = "cisave";
+		$sRet = sprintf( "<form method=post action=\"%s\">\n", $sOrigin);
+		$sRet .= "<input type=hidden name=cmdbctx value=adm>\n";
+		$sRet .= "<input type=hidden name=cmdbcmd value=".$sCmd.">\n";
+		$sRet .= "<table align=center>\n";
+		$sCID = "cmdb_itm_name";
+		$sCtl = sprintf( "<input type=text name=%s id=%s maxlength=%d value=\"%s\">", $sCID, $sCID, 80, "");
+		$sRet .= sprintf(	"<tr><td><strong>%s:<strong></td><td>%s</td></tr>\n",
+								"New CI Name", $sCtl);
+		$sCtl = sprintf( "<textarea name=%s rows=12 cols=80>%s</textarea>",
+								"cmdb_itm_brief", "");
+		$sRet .= sprintf( "<tr><td valign=top>%s:</td><td>%s</td></tr>",
+								"Description", $sCtl);
+	//	Add button
+		$sRet .= sprintf(	"<tr><td colspan=2 align=center>%s</td></tr>\n",
+								"<input type=submit value=Add>");
+	//	Terminate form table layout
+		$sRet .= "</table>\n";
+		$sRet .= "</form>\n";
+		return( $sRet);
+	}
+
+//	Full edit form
+	function genEditForm( $sOrigin, $sBtn, $sCmd) {
+		$lCI = $this->lID;
+		$sRet = sprintf( "<form method=post action=\"%s\">\n", $sOrigin);
+		$sRet .= "<input type=hidden name=cmdbctx value=adm>\n";
+		$sRet .= sprintf( "<input type=hidden name=cmdbitm value=%d>\n",$lCI);
+		$sRet .= "<table align=center>\n";
 		$sRet .= sprintf( "<tr><td align=center colspan=2>Item %d</td></tr>", $this->lID);
-		$sCtl = sprintf( "<textarea name=%s rows=1 cols=80 maxlength=80>%s</textarea>",
+		$sCtl = sprintf( "<input type=text name=%s maxlength=80 value=\"%s\">",
 								"cmdb_itm_name", $this->pFlds['name']['val']);
 		$sRet .= sprintf( "<tr><td>%s:</td><td>%s</td></tr>", "Name", $sCtl);
 		$sCtl = sprintf( "<textarea name=%s rows=24 cols=80>%s</textarea>",
