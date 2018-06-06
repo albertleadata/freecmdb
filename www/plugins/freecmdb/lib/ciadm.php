@@ -30,6 +30,47 @@ function saveCI() {
 	return;
 }
 
+function genTypeFilter() {
+	$iType=0;
+	$sFld = "cmdb_filter_cat";
+	if ( !isset( $_POST[$sFld])) {
+		if ( isset( $_GET[$sFld])) $iType = intval( $_GET[$sFld]);
+	} else $iType = intval( $_POST[$sFld]);
+	$sLUT="cmdblut";
+	$sQry="select b.name,b.eid from ".$sLUT." a join ".$sLUT." b on b.ptn=a.idx where a.ptn=0 and a.tag='cicat' order by b.idx";
+	$pRslt = db_query_bound( $sQry, Array());
+	$iRows = db_num_rows( $pRslt);
+	$sRet = "<table>\n";
+	$sRet .= sprintf( "<tr><td><strong>%s:</strong></td>\n", "Filter By");
+	$sRet .= "<td><select id=cmdb_filter_cat name=cmdb_filter_cat>\n";
+	for ( $iRows=db_num_rows( $pRslt); $iRows > 0; $iRows--) {
+		$pRow = db_fetch_array( $pRslt);
+		$iCLV = $pRow['eid'];
+		$sX = ($iCLV == $iType) ? " selected" : "";
+		$sRet .= sprintf( "<option value=%d%s>%s\n",
+								$iCLV,$sX,$pRow['name']);
+	}
+	$sRet .= "</select></td>\n";
+	$sRet .= "</tr></table>\n";
+	return( $sRet);
+}
+
+function genFilterForm() {
+	$sURL = "plugin.php?page=freecmdb/view";
+	$sRet = sprintf( "<form method=post action=\"%s\">\n", $sURL);
+	$sRet .= "<input type=hidden name=cmdbctx value=adm>\n";
+	$sRet .= "<input type=hidden name=cmdbcmd value=view>\n";
+	$sRet .= "<table align=center>\n";
+	$sRet .= "<tr>\n";
+	$sRet .= sprintf( "<td align=center>%s</td>\n",genTypeFilter());
+	$sCtl = "<input type=submit value=\"->\">";
+	$sRet .= sprintf( "<td align=center>%s</td>\n", $sCtl);
+	$sRet .= "</tr>\n";
+	$sRet .= "</table>\n";
+	$sRet .= "</form>\n";
+	return( $sRet);
+}
+
 function genCapturePage( $sOrigin) {
 	require_once( FREECMDBBASE . "/lib/ci.php");
 	$sRet="";
@@ -43,7 +84,7 @@ function genCapturePage( $sOrigin) {
 		$sRet = "<table align=center>\n";
 		$sRet .= sprintf( "<tr><td align=center>%s</td></tr>\n", "No CI");
 		$sRet .= "</table>\n";
-	} else $sRet = $pCI->genEditForm( $sOrigin, "cmdbcmd", "cisave");
+	} else $sRet = $pCI->genEditForm( $sOrigin, "Save", "cisave");
 	return( $sRet);
 }
 
@@ -72,59 +113,18 @@ function genCMDBCapture( $sOrigin) {
 	return( $sRet);
 }
 
-function genCMDBCatSel( $iCat) {
-	$sLT="cmdblut";
-	$sQry="select b.name,b.eid from ".$sLT." a join ".$sLT." b on b.ptn=a.idx where a.ptn=0 and a.tag='cicat' order by b.idx";
-	$pRslt = db_query_bound( $sQry, Array());
-	$iRows = db_num_rows( $pRslt);
-	$sRet = "<table class=tblRadioButtonMatrix>\n";
-	$sRet .= sprintf( "<tr><td><strong>%s:</strong></td>\n", "CI Type");
-	$sRet .= "<td><select id=cmdb_itm_cat name=cmdb_itm_cat>\n";
-	for ( $iRows=db_num_rows( $pRslt); $iRows > 0; $iRows--) {
-		$pRow = db_fetch_array( $pRslt);
-		$iCLV = $pRow['eid'];
-		$sX = ($iCLV == $iCat) ? " selected" : "";
-		$sRet .= sprintf( "<option value=%d%s>%s\n",$iCLV,$sX,$pRow['name']);
-	}
-	$sRet .= "</select></td>\n";
-	$sRet .= "</tr>\n";
-	$sRet .= "</table>\n";
-	return( $sRet);
-}
-
 function genCMDBSave() {
 	$sRet = "<table>\n";
-//	$sRet .= "<tr><td align=center><input type=checkbox name=cmdbnsa value=nsa>Next-Step</td></tr>\n";
 	$sRet .= "<tr><td align=center><input type=submit value=Save></td></tr>\n";
 	$sRet .= "</table>\n";
 	return( $sRet);
 }
 
-function genCMDBForm( $lCI) {
+function genCIForm( $lCI) {
+	$sOrigin = "plugin.php?page=freecmdb/view";
 	$pCI = new CI();
 	$pCI->find( $lCI);
-	$sItm = $pCI->pFlds['name']['val'];
-	$sBrief = $pCI->fetchBrief();
-	$iCat = $pCI->getType();
-	$sURL = "plugin.php?page=freecmdb/view";
-	$sRet = sprintf( "<form method=post action=\"%s\">\n", $sURL);
-	$sRet .= "<input type=hidden name=cmdbctx value=adm>\n";
-	$sRet .= "<input type=hidden name=cmdbcmd value=cmdbsave>\n";
-	$sRet .= sprintf( "<input type=hidden name=cmdbitm value=%d>\n", $lCI);
-	$sRet .= sprintf( "<input type=hidden name=cmdb_itm_name value=\"%s\">\n",$sItm);
-	$sRet .= "<table align=center>\n";
-	$sRet .= "<tr><td colspan=2><br></td></tr>\n";
-	$sRet .= sprintf( "<tr><td colspan=2><h1>%s</h1></td></tr>\n", $sItm);
-	$sRet .= sprintf( "<tr><td colspan=2><textarea id=cmdb_itm_brief name=cmdb_itm_brief rows=6 cols=80>%s</textarea></td></tr>\n",$sBrief);
-//	Selections
-	$sRet .= "<tr>\n";
-	$sRet .= sprintf( "<td align=center>\n%s</td>\n", genCMDBCatSel( $iCat));
-	$sRet .= sprintf( "<td align=center>\n%s</td>\n", genCMDBSave());
-	$sRet .= "</tr>\n";
-//	Spacer
-	$sRet .= "<tr><td colspan=2><br></td></tr>\n";
-	$sRet .= "</table></form>\n";
-	return( $sRet);
+	return( $pCI->genEditForm( $sOrigin,"Save","cmdbsave"));
 }
 
 function genNewCIBtn() {
@@ -141,28 +141,48 @@ function genCMDBView( $sOp) {
 	require_once( FREECMDBBASE . "/lib/ci.php");
 	if ( $sOp == "cmdbsave") saveCI();
 	$sRet = "<table>\n";
-	$sRet .= sprintf( "<tr><td align=center>%s</td></tr>\n", genNewCIBtn());
-	$sRet .= "<tr><td><br><br></td></tr>\n";
+	$sRet .= sprintf( "<tr><td align=center colspan=3>%s</td></tr>\n", genNewCIBtn());
+	$sRet .= sprintf( "<tr><td colspan=3>%s</td></tr>\n", genFilterForm());
+	$sRet .= "<tr><td colspan=3><br><br></td></tr>\n";
 	$iIdx = 0;
 	if ( !isset( $_POST['cmdb_itm_idx'])) {
 		if ( isset( $_GET['cmdb_itm_idx'])) $iIdx = $_GET['cmdb_itm_idx'];
 	} else $iIdx = $_POST['cmdb_itm_idx'];
+	$sFFld="cmdb_filter_cat";
+	$iType = 0;
+	if ( !isset( $_POST[$sFFld])) {
+		if ( isset( $_GET[$sFFld])) $iType = intval($_GET[$sFFld]);
+	} else $iType = intval($_POST[$sFFld]);
 	$pCI = new CI();
-	$pLst = $pCI->findAll( auth_get_current_user_id());
+	$sUID = auth_get_current_user_id();
+	$pLst = ($iType == 0)	? $pCI->findAll( $sUID)
+									: $pCI->findByType( $sUID, $iType);
 	$iRow = 0;
 	foreach ( $pLst as $lCI => $sItm) {
 		if ( $iRow != $iIdx) {
 			$sURL = "plugin.php?page=freecmdb/view";
-			$sRet .= sprintf( "<tr><td><form method=post action=\"%s\">\n",$sURL);
+			$sRet .= "<tr><td align=center colspan=3>\n";
+			$sRet .= sprintf( "<form method=post action=\"%s\">\n",$sURL);
 			$sRet .= "<input type=hidden name=cmdbctx value=adm>\n";
-			$sRet .= sprintf("<input type=hidden name=cmdb_itm_idx value=%d>\n",$iRow);
-			$sRet .= "<table align=center width=100%%>";
+			$sRet .= "<input type=hidden name=cmdbcmd value=refresh>\n";
+			$sRet .= "<input type=hidden name=cmdb_itm_idx value=".$iRow.">\n";
+			$sRet .= "<table align=center width=60%%>";
 			$sRet .= "<tr>\n";
 			$sRet .= sprintf( "<td width=100%%>%s</td>\n", $sItm);
 			$sRet .= sprintf( "<td><input type=submit value=\"%s\"></td>\n","...");
 			$sRet .= "</tr>\n";
-			$sRet .= "</table></form></td></tr>\n";
-		} else $sRet .= sprintf("<tr><td>%s</td></tr>\n", genCMDBForm($lCI));
+			$sRet .= "</table>\n";
+			$sRet .= "</form>\n";
+			$sRet .= "</td></tr>\n";
+		} else {
+		  	$sRet .= "<tr><td colspan=3><hr></td></tr>\n";
+		  	$sRet .= "<tr>\n";
+		  	$sRet .= "<td width=200></td>\n";
+		  	$sRet .= sprintf("<td>%s</td>\n", genCIForm($lCI));
+		  	$sRet .= "<td width=200></td>\n";
+		  	$sRet .= "</tr>\n";
+		  	$sRet .= "<tr><td colspan=3><hr></td></tr>\n";
+		}
 		$iRow++;
 	}
 	$sRet .= "</table>\n";
