@@ -23,35 +23,6 @@ function genBannerCMDB( $sHzn) {
 	$sRet = "<table align=center>\n";
 	$sRet .= "<tr><td align=center><h1>CMDB</h1></td></tr>\n";
 	$sRet .= "</table>\n";
-// Toolbar
-	$sRet .= "<table align=center>\n";
-	$sRet .= "<tr>\n";
-//	Capture ...
-	$sURL = "plugin.php?page=freecmdb/view";
-	$sImg = $sIDL . "/cmdb-logo.png";
-	$sBGC = ($sHzn == "capture") ? " bgcolor=\"".$sLGC."\"" : "";
-	$sRet .= sprintf( "<td align=center%s><a href=\"%s\"><img src=\"%s\" style=\"%s\"></a></td>\n", $sBGC, $sURL, $sImg, "height:128px;border:0;");
-	$sRet .= "<td width=64> </td>\n";
-//	Clarify & Organize ...
-	$sURL = "plugin.php?page=freecmdb/view&cmdbctx=clarify";
-	$sImg = $sIDL . "/cmdb-logo.png";
-	$sBGC = ($sHzn == "clarify") ? " bgcolor=\"".$sLGC."\"" : "";
-	$sRet .= sprintf( "<td align=center%s><a href=\"%s\"><img src=\"%s\" style=\"%s\"></a></td>\n", $sBGC, $sURL, $sImg, "height:128px;border:0;");
-	$sRet .= "<td width=64> </td>\n";
-//	Reflect ...
-	$sURL = "plugin.php?page=freecmdb/view&cmdbctx=reflect";
-	$sImg = $sIDL . "/cmdb-logo.png";
-	$sBGC = ($sHzn == "reflect") ? " bgcolor=\"".$sLGC."\"" : "";
-	$sRet .= sprintf( "<td align=center%s><a href=\"%s\"><img src=\"%s\" style=\"%s\"></a></td>\n", $sBGC, $sURL, $sImg, "height:128px;border:0;");
-	$sRet .= "<td width=64> </td>\n";
-// Engage ...
-	$sURL = "plugin.php?page=freecmdb/view&cmdbctx=engage";
-	$sImg = $sIDL . "/cmdb-logo.png";
-	$sBGC = ($sHzn == "engage") ? " bgcolor=\"".$sLGC."\"" : "";
-	$sRet .= sprintf( "<td align=center%s><a href=\"%s\"><img src=\"%s\" style=\"%s\"></a></td>\n", $sBGC, $sURL, $sImg, "height:128px;border:0;");
-//	Wrap up the table
-	$sRet .= "</tr>\n";
-	$sRet .= "</table>\n";
 	return( $sRet);
 }
 

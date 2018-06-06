@@ -17,7 +17,8 @@
 #   You should have received a copy of the
 #   GNU Lesser General Public License along with FreeCMDB.
 #   If not, see <http://www.gnu.org/licenses/>.
-DML = "zen:/srv/www/zenteknix.com/freecmdb"
+DML = "zen:/srv/www/albertleadata.org/freecmdb"
+DSL = "spirit:$(HOME)/www/mantis"
 PGM1 = cmdb
 PGMS = $(PGM1)
 JAR = freecmdb.jar
@@ -54,7 +55,7 @@ rls: $(PGMS)
 	rm -f freecmdb-src.tar.gz
 
 syncwww:
-	@rsync -ai --no-o --no-g --no-p --exclude='*.swp' ./www/ $(HOME)/www/mantis/
+	@rsync -ai --no-o --no-g --no-p --exclude='*.swp' ./www/ $(DSL)/
 
 %.class : %.java
 	javac -cp $(LCP) $<
